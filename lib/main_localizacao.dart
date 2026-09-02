@@ -12,7 +12,7 @@ class MeuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Distância até minha casa',
+      title: 'Minha Localização',
       home: const LocalizacaoPage(),
     );
   }
@@ -28,12 +28,6 @@ class LocalizacaoPage extends StatefulWidget {
 class _LocalizacaoPageState extends State<LocalizacaoPage> {
   double? latitude = 0;
   double? longitude = 0;
-  double? distancia;
-  bool calculouDistancia = false;
-
-  // Coordenadas da sua casa
-  final double casaLatitude = -21.483305511565902;
-  final double casaLongitude = -47.002914460172676;
 
   Future<void> _buscarLocalizacao() async {
     bool servicoAtivo = await Geolocator.isLocationServiceEnabled();
@@ -56,36 +50,20 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
 
     Position posicao = await Geolocator.getCurrentPosition();
 
-    double metros = Geolocator.distanceBetween(
-      posicao.latitude,
-      posicao.longitude,
-      casaLatitude,
-      casaLongitude,
-    );
-
     setState(() {
       latitude = posicao.latitude;
       longitude = posicao.longitude;
-      distancia = metros / 1000;
-      calculouDistancia = true;
     });
 
     print('Latitude: $latitude');
     print('Longitude: $longitude');
-    print('Distância: ${distancia?.toStringAsFixed(2)} km');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE9E4EA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE9E4EA),
-        elevation: 0,
-        title: const Text(
-          'Distância até minha casa',
-          style: TextStyle(color: Colors.black87),
-        ),
+        title: const Text('Minha Localização'),
       ),
       body: Center(
         child: Padding(
@@ -95,59 +73,41 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(
-                Icons.home,
+                Icons.location_on,
                 size: 100,
-                color: Color(0xFF7E57C2),
+                color: Colors.blue,
               ),
 
               const SizedBox(height: 20),
 
               const Text(
-                'Distância entre a escola e minha casa',
-                textAlign: TextAlign.center,
+                'Localização Atual:',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
-              const Text(
-                'Clique no botão para calcular a distância.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+              Text(
+                'Latitude: $latitude',
+                style: const TextStyle(fontSize: 18),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                'Longitude: $longitude',
+                style: const TextStyle(fontSize: 15),
               ),
 
               const SizedBox(height: 30),
 
               ElevatedButton(
                 onPressed: _buscarLocalizacao,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE8DFF0),
-                  foregroundColor: const Color(0xFF7E57C2),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Calcular Distância'),
+                child: const Text('Atualizar Localização'),
               ),
-
-              const SizedBox(height: 20),
-
-              if (calculouDistancia)
-                Text(
-                  '${distancia!.toStringAsFixed(2)} km',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
             ],
           ),
         ),
